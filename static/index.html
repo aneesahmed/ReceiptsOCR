@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue 2 Image Cropping Demo (Mock API)</title>
+
+    <link rel="stylesheet" href="/static/css/style.css" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+
+    <script src="/static/js/app.js" defer></script>
+</head>
+<body>
+
+<div id="app">
+    <h1>Vue 2 Image Cropping Workflow (Mock API)</h1>
+
+    <div class="section">
+        <h2>1. Select Image</h2>
+        <input type="file" @change="onFileChange" accept="image/*" :disabled="isLoading">
+        <p v-if="selectedFile">File selected: <strong>{{ selectedFile.name }}</strong></p>
+    </div>
+
+    <div class="section" v-if="imageUrl">
+        <h2>2. Initial Crop & Adjustment</h2>
+
+        <button @click="submitImageForCoordinates" :disabled="isLoading || !selectedFile || coordinates">
+            {{ isLoading ? 'Loading...' : 'Submit Image (Mock API)' }}
+        </button>
+
+        <button v-if="coordinates && !cropperInstance" @click="initCropper" :disabled="isLoading">
+            ➡️ Start Cropping
+        </button>
+
+        <button @click="destroyCropper" v-if="cropperInstance">
+            Reset Cropper
+        </button>
+
+        <div v-if="coordinates" style="margin-top: 15px;">
+            <p>Mock API Coordinates Received:</p>
+            <pre>{{ coordinates }}</pre>
+        </div>
+
+        <div class="image-container" style="margin-top: 15px;">
+            <img ref="image" :src="imageUrl" alt="Image to be cropped" id="image-to-crop" />
+        </div>
+
+        <p v-if="!cropperInstance && coordinates">**Coordinates received. Click 'Start Cropping' to begin.**</p>
+    </div>
+
+    <div class="section" v-if="cropperInstance">
+        <h2>3. Final Crop Submission</h2>
+        <button @click="submitCroppedImage">
+            Submit Final Cropped Data (Mock API)
+        </button>
+        <div v-if="croppedData" style="margin-top: 15px;">
+            <p>Final Cropped Data Submitted:</p>
+            <pre>{{ croppedData }}</pre>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

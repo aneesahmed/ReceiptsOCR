@@ -1,0 +1,51 @@
+/* static/css/style.css */
+
+body {
+    font-family: sans-serif;
+    padding: 20px;
+}
+
+#app {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* --- CRITICAL FIX FOR CROPPER.JS OVERFLOW --- */
+.image-container {
+    max-width: 100%;
+    max-height: 400px; /* Limits height, preventing buttons from being pushed down */
+    overflow: hidden;
+}
+.image-container img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+/* ------------------------------------------- */
+
+.section {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    padding: 8px 12px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    margin-right: 10px;
+    transition: background-color 0.3s;
+}
+
+button:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+button:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}

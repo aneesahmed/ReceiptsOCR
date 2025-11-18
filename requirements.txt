@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+python-multipart
+opencv-python
+numpy
+pydantic
+pytest           # For running tests
+httpx            # Used by TestClient for making requests
