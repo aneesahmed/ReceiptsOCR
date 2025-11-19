@@ -12,14 +12,21 @@ body {
 
 /* --- CRITICAL FIX FOR CROPPER.JS OVERFLOW --- */
 .image-container {
+    /* Limits height, preventing buttons from being pushed down */
     max-width: 100%;
-    max-height: 400px; /* Limits height, preventing buttons from being pushed down */
+    max-height: 400px; 
     overflow: hidden;
+    /* Adding height: auto helps define the container's extent */
+    height: auto; 
 }
 .image-container img {
     display: block;
+    /* FIX: Explicitly set width and max-height to ensure the image scales down 
+       to fit the container's 400px height constraint properly. */
+    width: 100%;
     max-width: 100%;
-    height: auto;
+    height: auto; 
+    max-height: 100%; 
 }
 /* ------------------------------------------- */
 

@@ -5,7 +5,7 @@ from fastapi import UploadFile
 from typing import Tuple, Dict, Any
 
 # --- Configuration ---
-STORAGE_DIR = "images"
+STORAGE_DIR = "uploads"
 RGB_LOWER_BOUND = np.array([190, 190, 190])
 RGB_UPPER_BOUND = np.array([255, 255, 255])
 CROP_SUFFIX = "_processed"

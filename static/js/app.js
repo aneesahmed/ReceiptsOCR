@@ -1,5 +1,8 @@
 // static/js/app.js
 
+// Retrieve the base URL from the global object injected by the FastAPI server.
+const BASE_URL = window.API_CONFIG ? window.API_CONFIG.BASE_URL : 'http://localhost:8000'; 
+
 new Vue({
     el: '#app',
     data: {
@@ -8,17 +11,7 @@ new Vue({
         isLoading: false,
         coordinates: null,
         cropperInstance: null,
-        croppedData: null,
-        // Mock response data
-        mockApiCoordinates: {
-            "filename": "invoice7.jpeg",
-            "output_filename": "invoice7_cropped.jpeg",
-            "x": 1125,
-            "y": 993,
-            "w": 1899,
-            "h": 2291,
-            "status": "Cropped and Coordinates Found"
-        }
+        // The final submission data fields are removed
     },
     methods: {
         // --- Step 1: Handle File Selection ---
@@ -28,48 +21,78 @@ new Vue({
                 this.selectedFile = file;
                 this.imageUrl = URL.createObjectURL(file);
                 this.coordinates = null;
-                this.croppedData = null;
-                this.destroyCropper();
+                this.destroyCropper(); 
             }
         },
 
-        // --- Step 2: Submit Image for Coordinates (MOCK API) ---
-        submitImageForCoordinates() {
+        // --- Step 2: Submit Image for Processing (Manual API Call) ---
+        async submitImageForCoordinates() {
             if (!this.selectedFile) return;
 
             this.isLoading = true;
             this.coordinates = null;
-            this.croppedData = null;
             this.destroyCropper();
 
-            // --- MOCK API CALL SIMULATION ---
-            console.log('Simulating API call to submit image:', this.selectedFile.name);
-            setTimeout(() => {
+            // Prepare the form data to send the file
+            const formData = new FormData();
+            formData.append('file', this.selectedFile);
+
+            console.log('Sending image to API for saving and processing...');
+
+            try {
+                // Use the consolidated endpoint
+                const response = await fetch(`${BASE_URL}/api/process_image/`, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error! Status: ${response.status}. Details: ${errorText}`);
+                }
+
+                const data = await response.json();
+                
                 this.isLoading = false;
-                this.coordinates = this.mockApiCoordinates;
-                console.log('Mock API Response:', this.coordinates);
-                // Initialization is now manual (via button click)
-            }, 1500);
+                // Basic check for coordinate data validity
+                if (data && data.x !== undefined) {
+                    this.coordinates = data;
+                } else {
+                    console.error("API returned invalid or missing coordinate data:", data);
+                    this.coordinates = null;
+                }
+                
+                console.log('API Response (Coordinates and Status):', this.coordinates);
+
+                // Cropper Initialization now waits for manual button click
+
+            } catch (error) {
+                this.isLoading = false;
+                this.coordinates = null;
+                console.error('Error submitting image:', error);
+                alert(`Processing Failed. Check server status and console. Error: ${error.message}`);
+            }
         },
 
-        // --- Initialize Cropper.js (Triggered by button) ---
+        // --- Initialize Cropper.js (Triggered by manual button click) ---
         initCropper() {
             if (!this.coordinates) return;
 
-            const imageElement = this.$refs.image;
+            const imageElement = this.$refs.image; 
             if (!imageElement) {
-                console.error("Image element not found for Cropper.js initialization.");
+                console.error("Image element reference not found.");
                 return;
             }
-
+            
             const setupCropper = () => {
-                if (this.cropperInstance) return;
+                if (this.cropperInstance) return; 
 
+                // Use coordinates from the single API response
                 const { x, y, w, h } = this.coordinates;
 
                 this.cropperInstance = new Cropper(imageElement, {
                     aspectRatio: NaN,
-                    viewMode: 1,
+                    viewMode: 1, 
                     ready: () => {
                         this.cropperInstance.setData({
                             x: x,
@@ -100,32 +123,6 @@ new Vue({
                 this.cropperInstance = null;
             }
         },
-
-        // --- Step 3: Submit Final Cropped Data (MOCK API) ---
-        submitCroppedImage() {
-            if (!this.cropperInstance) {
-                alert('Please initialize the cropper first!');
-                return;
-            }
-
-            this.isLoading = true;
-
-            const cropData = this.cropperInstance.getData(true);
-
-            // --- MOCK API CALL SIMULATION ---
-            const submissionPayload = {
-                ...cropData,
-                originalFileName: this.selectedFile.name,
-                targetEndpoint: 'final_crop_submission_endpoint'
-            };
-
-            console.log('Simulating API call to submit final crop:', submissionPayload);
-            setTimeout(() => {
-                this.isLoading = false;
-                this.croppedData = submissionPayload;
-                alert('Final cropped data simulated to be submitted!');
-            }, 1500);
-        }
     },
     beforeDestroy() {
         this.destroyCropper();
