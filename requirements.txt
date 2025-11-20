@@ -1,0 +1,9 @@
+fastapi
+httpx
+numpy
+Pillow
+pydantic
+pytest
+uvicorn
+opencv-python-headless
+pillow_heif
