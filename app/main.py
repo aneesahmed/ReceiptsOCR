@@ -86,33 +86,8 @@ async def submit_cropped_image(
 # --- Static File Serving and Root Route ---
 
 @app.get("/", response_class=HTMLResponse)
-async def serve_vue_app():
-    """Serves the index.html page and injects the API URL."""
-    logger.info("Serving index.html to client.")
-
-    # Ensure this mount happens before any requests are handled
-    app.mount("/static", StaticFiles(directory="static"), name="static")
-
-    try:
-        with open("static/index.html", "r", encoding='utf-8') as f:
-            html_content = f.read()
-
-        # Inject global API config
-        js_injection = f"""
-<script>
-    window.API_CONFIG = {{
-        BASE_URL: '{API_BASE_URL}'
-    }};
-</script>
-"""
-        html_content = html_content.replace('</head>', js_injection + '</head>')
-
-        return HTMLResponse(content=html_content)
-    except FileNotFoundError:
-        logger.error("index.html file not found in the 'static' directory.", exc_info=True)
-        return HTMLResponse(content="<h1>Error: index.html not found in the 'static' directory.</h1>", status_code=404)
-
-
+async def default():
+    return "hello receiptocr , ip:8000/docs"
 # --- Uvicorn Startup ---
 
 if __name__ == "__main__":
