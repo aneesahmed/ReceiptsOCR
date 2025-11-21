@@ -1,5 +1,5 @@
 # app/main.py
-
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, UploadFile, File, Depends, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
@@ -23,6 +23,17 @@ API_BASE_URL = "http://localhost:8000"
 
 # --- FastAPI App Instance ---
 app = FastAPI(title="Vue-FastAPI Cropping App (Final)")
+origins = [
+    "*"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,         # Allow all origins
+    allow_credentials=True,        # Allow cookies/auth headers (if needed)
+    allow_methods=["*"],           # Allow all HTTP methods (GET, POST, PUT, etc.)
+    allow_headers=["*"],           # Allow all headers
+)
 
 # --- Initialize Service Instance ---
 image_service_instance = ImageService()
